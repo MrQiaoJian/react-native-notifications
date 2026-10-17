@@ -1,22 +1,35 @@
 {
-  "extends": "./tsconfig-strict.json",
+  "extends": "@react-native/typescript-config/tsconfig.json",
   "compilerOptions": {
-    "outDir": "./lib/dist",
-    "allowJs": false,
-    "target": "esnext",
-    "module": "commonjs",
-    "jsx": "react-native",
+    "noEmit": false,
     "declaration": true,
-    "skipLibCheck": true,
-    "types": [
-      "jest",
-      "lodash",
-      "react",
-      "react-native",
-      "react-test-renderer"
-    ]
+    "jsx": "react",
+    "sourceMap": true,
+    "removeComments": false,
+    "allowImportingTsExtensions": false
   },
   "include": [
-    "./lib/src/**/*"
+    "src"
+  ],
+  "exclude": [
+    "node_modules",
+    "**/__tests__/*",
+    "node_modules/**",
+    "oh_modules/**",
+    "example*/**",
+    "harmony*/**",
+    "android/**",
+    "ios/**",
+    "windows/**",
+    "macos/**",
+    "linux/**",
+    "dist/**",
+    "build/**",
+    "out/**",
+    "lib/**",
+    "**/.*/**",
+    "__tests__/**",
+    "**/*.test.*",
+    "**/*.spec.*"
   ]
 }
