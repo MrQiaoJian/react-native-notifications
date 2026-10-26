@@ -1,4 +1,4 @@
-# @oh-rn/react-native-notifications for HarmonyOS
+# @react-native-ohos/react-native-notifications for HarmonyOS
 
 本项目基于 [react-native-notifications](https://github.com/wix/react-native-notifications) 开发，为 React Native 鸿蒙（OpenHarmony）适配版本。
 
@@ -6,12 +6,12 @@
 
 | 鸿蒙适配包版本 | 原始库版本 | 支持 RN 版本 | Autolink | 编译 API 版本 |
 | ------------ | ---------- | ------------ | -------- | ------------- |
-| 见发布记录 | 5.1.0 | 0.72+ | 是 | API12+ |
+| 5.1.1-beta.1 | 5.1.0 | 0.72+ | 是 | API12+ |
 
 ## 安装
 
 ```bash
-npm install @oh-rn/react-native-notifications
+npm install @react-native-ohos/react-native-notifications
 ```
 
 ## 使用
@@ -81,7 +81,7 @@ Notifications.events().registerNotificationOpened((notification, completion, act
 
 ```json
 "dependencies": {
-  "@oh-rn/react-native-notifications": "file:../../node_modules/@oh-rn/react-native-notifications/harmony/notifications.har"
+  "@react-native-ohos/react-native-notifications": "file:../../node_modules/@react-native-ohos/react-native-notifications/harmony/notifications.har"
 }
 ```
 
@@ -94,9 +94,9 @@ Notifications.events().registerNotificationOpened((notification, completion, act
 ```cmake
 set(OH_MODULES "${CMAKE_CURRENT_SOURCE_DIR}/../../../oh_modules")
 
-add_subdirectory("${OH_MODULES}/@oh-rn/react-native-notifications/src/main/cpp" ./notifications)
+add_subdirectory("${OH_MODULES}/@react-native-ohos/react-native-notifications/src/main/cpp" ./rnoh_notifications)
 
-target_link_libraries(rnoh_app PUBLIC notifications)
+target_link_libraries(rnoh_app PUBLIC rnoh_notifications)
 ```
 
 ### 4. 注册 Package（C++ 侧）
@@ -118,7 +118,7 @@ std::vector<std::shared_ptr<Package>> PackageProvider::getPackages(Package::Cont
 打开 `entry/src/main/ets/RNPackagesFactory.ets`，添加：
 
 ```typescript
-import { NotificationsPackage } from '@oh-rn/react-native-notifications/ts';
+import { NotificationsPackage } from '@react-native-ohos/react-native-notifications/ts';
 
 export function createRNPackages(ctx: RNPackageContext): RNPackage[] {
   return [

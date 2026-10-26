@@ -3,11 +3,10 @@
   "devDependencies": {
 
   },
-  "author": "",
-  "name": "@oh-rn/react-native-notifications",
-  "description": "Please describe the basic information.",
+  "name": "@react-native-ohos/react-native-notifications",
+  "description": "React Native notifications library for HarmonyOS (OpenHarmony)",
   "main": "index.ets",
-  "version": "1.0.0",
+  "version": "5.1.1-beta.1",
   "dependencies": {
     "@rnoh/react-native-openharmony": "file:../react_native_openharmony_release.har"
   }

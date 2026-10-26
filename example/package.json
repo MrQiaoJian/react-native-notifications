@@ -10,10 +10,10 @@
     "tsc": "tsc --noEmit"
   },
   "dependencies": {
-    "@react-native-oh/react-native-harmony": "0.72.139",
+    "@react-native-oh/react-native-harmony": "0.72.145",
     "react": "18.2.0",
     "react-native": "0.72.5",
-    "@oh-rn/react-native-notifications": "file:../oh-rn-react-native-notifications-5.1.0.tgz"
+    "@react-native-ohos/react-native-notifications": "file:../react-native-ohos-react-native-notifications-5.1.1-beta.1.tgz"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
@@ -30,6 +30,7 @@
     "metro-react-native-babel-preset": "0.76.8",
     "prettier": "^2.4.1",
     "react-test-renderer": "18.2.0",
+    "@react-native-oh/react-native-harmony-cli": "0.72.145",
     "typescript": "^5.0.0"
   },
   "overrides": {

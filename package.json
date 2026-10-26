@@ -1,8 +1,8 @@
 {
-  "name": "@oh-rn/react-native-notifications",
+  "name": "@react-native-ohos/react-native-notifications",
   "displayName": "React Native Notifications",
-  "version": "5.1.0",
-  "description": "Advanced Push Notifications (Silent, interactive notifications) for iOS & Android",
+  "version": "5.1.1-beta.1",
+  "description": "Advanced Push Notifications (Silent, interactive notifications) for HarmonyOS (OpenHarmony)",
   "main": "./src/index.ts",
   "module": "./src/index.ts",
   "react-native": "./src/index.ts",
@@ -11,14 +11,14 @@
   "private": false,
   "repository": {
     "type": "git",
-    "url": "https://github.com/wix/react-native-notifications.git"
+    "url": "https://github.com/react-native-oh-library/react-native-notifications.git"
   },
   "keywords": [
     "react-native",
     "harmony",
     "harmonyos"
   ],
-  "homepage": "https://github.com/wix/react-native-notifications",
+  "homepage": "https://github.com/react-native-oh-library/react-native-notifications",
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
   },
@@ -59,8 +59,8 @@
   "harmony": {
     "alias": "react-native-notifications",
     "autolinking": {
-      "cmakeLibraryTargetName": "notifications",
-      "ohPackageName": "@oh-rn/react-native-notifications",
+      "cmakeLibraryTargetName": "rnoh_notifications",
+      "ohPackageName": "@react-native-ohos/react-native-notifications",
       "etsPackageClassName": "NotificationsPackage",
       "cppPackageClassName": "NotificationsPackage"
     },

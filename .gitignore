@@ -9,9 +9,6 @@ yarn-error.log
 # Build output
 /dist
 
-# npm pack output
-*.tgz
-
 # IDE
 .idea/
 .vscode/

@@ -4,10 +4,10 @@ cmake_minimum_required(VERSION 3.5)
 
 # @actor RNOH_APP
 function(autolink_libraries target)
-    add_subdirectory("${OH_MODULES_DIR}/@oh-rn/react-native-notifications/src/main/cpp" ./notifications)
+    add_subdirectory("${OH_MODULES_DIR}/@react-native-ohos/react-native-notifications/src/main/cpp" ./rnoh_notifications)
 
     set(AUTOLINKED_LIBRARIES
-        notifications
+        rnoh_notifications
     )
 
     foreach(lib ${AUTOLINKED_LIBRARIES})
