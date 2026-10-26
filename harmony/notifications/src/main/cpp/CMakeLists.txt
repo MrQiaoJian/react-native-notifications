@@ -12,9 +12,9 @@ file(GLOB library_SRC CONFIGURE_DEPENDS *.cpp)
 # （如 "RNOH/generated/turbo_modules/X.h"）。必须把 _oh_rn_* 子目录也加入 PUBLIC include，否则
 # 消费端（entry rnoh_app 的 PackageProvider.cpp）解析这些头会 fatal error: file not found。
 file(GLOB library_codegen_ns_dirs LIST_DIRECTORIES true "${library_generated_dir}/_oh_rn_*")
-add_library(notifications SHARED ${library_SRC} ${library_generated_SRC})
-target_include_directories(notifications PUBLIC
+add_library(rnoh_notifications SHARED ${library_SRC} ${library_generated_SRC})
+target_include_directories(rnoh_notifications PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${library_generated_dir}
     ${library_codegen_ns_dirs})
-target_link_libraries(notifications PUBLIC rnoh)
+target_link_libraries(rnoh_notifications PUBLIC rnoh)

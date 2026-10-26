@@ -3,7 +3,7 @@
  * DO NOT modify it manually, your changes WILL be overwritten.
  */
 import type { RNPackageContext, RNOHPackage } from '@rnoh/react-native-openharmony';
-import NotificationsPackage from '@oh-rn/react-native-notifications';
+import NotificationsPackage from '@react-native-ohos/react-native-notifications';
 
 export function createRNOHPackages(ctx: RNPackageContext): RNOHPackage[] {
   return [

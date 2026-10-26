@@ -5,7 +5,7 @@
 
 import { RNAbility } from '@rnoh/react-native-openharmony';
 import { Want, AbilityConstant } from '@kit.AbilityKit';
-import { RNNotificationsBridge } from '@oh-rn/react-native-notifications';
+import { RNNotificationsBridge } from '@react-native-ohos/react-native-notifications';
 
 export default class EntryAbility extends RNAbility {
   getPagePath() {
