@@ -331,7 +331,6 @@ export class NotificationsTurboModule extends EtsUITurboModule implements RNBrid
     let parameters: Record<string, Object> = {
       'rnNotificationsPayload': payloadJson,
       'rnNotificationsAction': actionId,
-      'rnNotificationsActionText': '',
     };
     let want: Want = {
       bundleName: context.abilityInfo.bundleName,
