@@ -358,9 +358,9 @@ Notifications.events().registerNotificationOpened((notification, completion, act
 | registerPushKit | 无 | void | iOS | 是 | 注册 PushKit 获取 token。 |
 | getBadgeCount | 无 | Promise<number> | iOS | partially | 读取应用角标数（鸿蒙API 22+ 真实读取，低版本返回最近一次 setBadgeCount 的记录值）。 |
 | setBadgeCount | count: number | void | iOS | 是 | 设置应用角标数。 |
-| finishPresentingNotification | notificationId: string | void | iOS | 否 | 完成前台通知的展示（鸿蒙无前台展示拦截点，空实现）。 |
-| finishHandlingAction | notificationId: string, actionResponse: NotificationActionResponse | void | iOS | 否 | 完成前台行动按钮的处理（鸿蒙无对应回调点，空实现）。 |
-| finishHandlingBackgroundAction | notificationId: string, actionResponse: NotificationActionResponse | void | iOS | 否 | 完成后台行动的处理（鸿蒙无对应回调点，空实现）。 |
+| finishPresentingNotification | notificationId: string, options: Object | void | iOS | 否 | 完成前台通知的展示（鸿蒙无前台展示拦截点，空实现）。 |
+| finishHandlingAction | notificationId: string | void | iOS | 否 | 完成前台行动按钮的处理（鸿蒙无对应回调点，空实现）。 |
+| finishHandlingBackgroundAction | notificationId: string, backgroundFetchResult: string | void | iOS | 否 | 完成后台行动的处理（鸿蒙无对应回调点，空实现）。 |
 
 ### 事件
 
@@ -375,6 +375,20 @@ Notifications.events().registerNotificationOpened((notification, completion, act
 | pushKitRegistered | event: { pushKitToken } | iOS | 是 | PushKit 注册成功，返回 token。 |
 | pushKitNotificationReceived | event: { type, data } | iOS | 是 | 收到 PushKit 透传消息。 |
 | appNotificationSettingsLinked | 无 | iOS | 否 | 用户跳转应用通知设置链接时触发（鸿蒙通知体系无此事件源）。 |
+
+### 导出类型
+
+以下类型均可从包根 `react-native-notifications` 导入，供事件回调签名与参数构造使用：
+
+| 名称 | 说明 |
+| --- | --- |
+| Notification | 通知 DTO（`getInitialNotification`、`getDeliveredNotifications` 返回值及各事件回调的载荷类型）。 |
+| NotificationCategory | 通知类别，`setCategories` 的参数类型。 |
+| NotificationActionResponse | `notificationOpened` 回调中 `actionResponse` 参数的类型，textInput 输入经其 `text` 字段回传。 |
+| NotificationCompletion | 前台通知展示完成项（iOS 协议，鸿蒙空实现）。 |
+| NotificationBackgroundFetchResult | 后台处理结果枚举（`newData` / `noData` / `failed`，iOS 协议，鸿蒙空实现）。 |
+| Registered / RegistrationError / RegisteredPushKit / NotificationResponse | 事件载荷接口（推送 token、注册失败错误、PushKit token 等）。 |
+| EventSubscription | 事件订阅句柄，为 react-native `EmitterSubscription` 的兼容别名（本库新增导出，行为与原类型完全一致；事件注册方法实际返回 `EmitterSubscription`）。 |
 
 ## 遗留问题
 
