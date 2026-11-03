@@ -1,0 +1,11 @@
+[
+    {
+        "Name": "react-native-notifications",
+        "License": "MIT License",
+        "License File": "https://github.com/wix/react-native-notifications/blob/master/LICENSE",
+        "Version Number": "5.1.0",
+		"Owner" : "- [panjinling](https://gitcode.com/panjinling)",
+        "Upstream URL": "https://github.com/wix/react-native-notifications",
+        "Description": "React Native Local and Remote Notifications"
+    }
+]

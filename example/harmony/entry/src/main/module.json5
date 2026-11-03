@@ -14,6 +14,25 @@
     "deliveryWithInstall": true,
     "installationFree": false,
     "pages": "$profile:main_pages",
+    "metadata": [
+      {
+        // Push Kit 接入：AGC「我的项目 → 常规 → 应用信息」中的 Client ID
+        "name": "client_id",
+        "value": ""
+      }
+    ],
+    "requestPermissions": [
+      {
+        "name": "ohos.permission.INTERNET",
+        "reason": "$string:internet_reason",
+        "usedScene": {
+          "abilities": [
+            "EntryAbility"
+          ],
+          "when":"always"
+        }
+      }
+    ],
     "abilities": [
       {
         "name": "EntryAbility",
@@ -31,6 +50,12 @@
             ],
             "actions": [
               "ohos.want.action.home"
+            ]
+          },
+          {
+            // Push Kit 后台消息：将该 Ability 注册为透传消息接收方（有且只能有一个 ability 声明此 action）
+            "actions": [
+              "action.ohos.push.listener"
             ]
           }
         ]

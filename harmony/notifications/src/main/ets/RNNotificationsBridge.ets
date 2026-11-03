@@ -224,14 +224,26 @@ export class RNNotificationsBridge {
 
   /** Push Kit 透传消息：前台→notificationReceived，后台→notificationReceivedBackground；同时透传 pushKitNotificationReceived */
   private handlePushMessage(payload: pushCommon.PushPayload): void {
-    this.dispatchEvent('pushKitNotificationReceived', { 'type': payload.type, 'data': payload.data });
+    // Push Kit 下发的 data 是信封 {"data":"<extraData原文>","header":{...}}，业务内容在 .data 字段；
+    // JS 侧契约（NotificationFactory）要求平铺结构（title/body 顶层），须先解信封。
+    let raw: string = payload.data;
+    try {
+      let envelope = JSON.parse(payload.data) as Record<string, Object>;
+      let innerData = envelope['data'];
+      if (typeof innerData === 'string') {
+        raw = innerData;
+      }
+    } catch (e) {
+      hilog.debug(LOG_DOMAIN, LOG_TAG, 'push payload is not an envelope, use raw data');
+    }
+    this.dispatchEvent('pushKitNotificationReceived', { 'type': payload.type, 'data': raw });
     let notification: Record<string, Object>;
     try {
-      notification = JSON.parse(payload.data) as Record<string, Object>;
+      notification = JSON.parse(raw) as Record<string, Object>;
     } catch (e) {
       hilog.warn(LOG_DOMAIN, LOG_TAG, 'push payload data is not JSON, wrapping raw string');
       let inner: Record<string, Object> = { 'pushType': payload.type };
-      notification = { 'body': payload.data, 'payload': inner };
+      notification = { 'body': raw, 'payload': inner };
     }
     if (this.isForeground) {
       this.dispatchEvent('notificationReceived', notification);
@@ -268,10 +280,11 @@ export class RNNotificationsBridge {
     if (actionId === '') {
       return null;
     }
-    let actionText = paramAsString(params, 'rnNotificationsActionText');
-    if (actionText === '') {
-      // 用户通过文本输入按钮提交时，系统以 inputKey 为键回填输入内容
-      actionText = paramAsString(params, 'rnActionText');
+    // 文本输入按钮提交时，系统不以 inputKey 为键回填，而是以 key=inputKey、data=输入文本
+    // 两个通用参数携带（真机 dump 验证：key=rnActionText、data=用户输入）
+    let actionText = '';
+    if (paramAsString(params, 'key') === 'rnActionText') {
+      actionText = paramAsString(params, 'data');
     }
     let action: Record<string, Object> = { 'identifier': actionId, 'text': actionText };
     return action;

@@ -1,252 +1,416 @@
-# @react-native-ohos/react-native-notifications for HarmonyOS
+<p align="center">
+  <h1 align="center"> <code>@react-native-ohos/react-native-notifications</code> </h1>
+</p>
 
-本项目基于 [react-native-notifications](https://github.com/wix/react-native-notifications) 开发，为 React Native 鸿蒙（OpenHarmony）适配版本。
+本项目基于 [react-native-notifications](https://github.com/wix/react-native-notifications) 开发。
 
-## 版本对应关系
+版本所属关系如下：
 
-| 鸿蒙适配包版本 | 原始库版本 | 支持 RN 版本 | Autolink | 编译 API 版本 |
-| ------------ | ---------- | ------------ | -------- | ------------- |
-| 5.1.1-beta.1 | 5.1.0 | 0.72+ | 是 | API12+ |
+| 三方库名称 | 三方库版本（npm地址） | 发布信息 | 支持RN版本 | Autolink | 编译API版本 | 社区基线版本 | 源码地址 |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| @react-native-ohos/react-native-notifications | [~ 5.1.1](https://www.npmjs.com/package/@react-native-ohos/react-native-notifications) | [GitHub Releases](https://github.com/react-native-oh-library/react-native-notifications/releases) | 0.72/0.77/0.82/0.84 | partially(0.72/0.82/0.84) | API12+ | 5.1.0 | [master](https://github.com/react-native-oh-library/react-native-notifications/tree/master) |
 
-## 安装
+## 简介
+
+Notifications 组件用于 React Native。<br/>
+提供本地通知发布与管理、远程推送（Push Kit）、通知事件监听（前台/后台到达、点击、行动按钮及文本回传）、通知类别、通知渠道、角标管理等通知全链路能力。
+
+## 下载安装
+
+进入到工程目录并输入以下命令：
+
+**npm**
 
 ```bash
 npm install @react-native-ohos/react-native-notifications
 ```
 
-## 使用
+**yarn**
 
-```tsx
-import { Notifications } from 'react-native-notifications';
-
-// 注册远程通知（鸿蒙：弹系统授权框 → 获取 Push Kit token）
-Notifications.registerRemoteNotifications();
-Notifications.events().registerRemoteNotificationsRegistered((event) => {
-  console.log('deviceToken:', event.deviceToken);
-});
-
-// 发布本地通知（点击通知经 wantAgent 回拉应用并携带原始 payload）
-Notifications.postLocalNotification({
-  title: '会议提醒',
-  body: '10:30 产品评审',
-  payload: { category: 'SOME_CATEGORY', link: 'app://meeting/1' },
-});
-
-// 监听通知点击（含行动按钮文本输入回传）
-Notifications.events().registerNotificationOpened((notification, completion, actionResponse) => {
-  console.log(notification.title, actionResponse?.identifier, actionResponse?.text);
-  completion();
-});
+```bash
+yarn add @react-native-ohos/react-native-notifications
 ```
-
-> import 时使用原库名 `'react-native-notifications'`，而非鸿蒙包名（由 RNOH alias 映射）。
-
-**平台差异**：
-- 远程推送走 Push Kit：`registerRemoteNotifications()` 先经 `requestEnableNotification` 弹系统授权框，再取 Push token（需 AGC 开通推送服务 + 真机签名；失败派发 `remoteNotificationsRegistrationFailed`，本地通知不受影响）
-- 前台通知展示由系统通知中心管理，iOS 的 completion 协议（3 个 finish 方法）为空实现
-- `abandonPermissions()` 跳转本应用通知设置页（API 18+），鸿蒙不支持程序化撤销授权
-
-**权限要求**：
-- 通知授权经运行时 `requestEnableNotification` 系统弹窗申请，`module.json5` 无需声明 `ohos.permission.*`
-- 自定义铃声需将音频文件放入应用 `resources/rawfile`，`sound` 传文件名（如 `'chime.wav'`）
 
 ## Link
 
-| 版本 | 是否支持 Autolink |
-|------|------------------|
-| 当前版本 | 是 |
+|                                     | 是否支持Autolink | RN框架版本 |
+|--------------------------------------|----------------|-----------|
+| ~ 5.1.1  | partially(0.72/0.82/0.84)   |  0.72/0.77/0.82/0.84     |
 
-如使用版本支持 Autolink 且工程已接入，可跳过手动配置。
+使用 Autolink 的工程需要根据该文档配置，Autolink 框架指导文档：https://gitcode.com/CPF-RN/ohos_react_native/blob/main/docs/zh-cn/02-开发/02-开发指南/Autolinking.md   
+
+如您使用的版本支持 Autolink，并且工程已接入 Autolink，可跳过 ManualLink 配置。
 
 <details>
-<summary>Manual Link 配置</summary>
+  <summary>ManualLink: 此步骤为手动配置原生依赖项的指导</summary>
 
-> **说明**：本模块需要同时在 C++ 侧和 ETS 侧注册 Package。
+首先需要使用 DevEco Studio 打开项目里的 OpenHarmony 工程 `harmony`。
 
 ### 1. Overrides RN SDK
 
-在工程根目录 `oh-package.json5` 添加：
+为了让工程依赖同一个版本的 RN SDK，需要在工程根目录的 `oh-package.json5` 添加 overrides 字段，指向工程需要使用的 RN SDK 版本。替换的版本既可以是一个具体的版本号，也可以是一个模糊版本，还可以是本地存在的 HAR 包或源码目录。
+
+关于该字段的作用请阅读[官方说明](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides-V5/ide-oh-package-json5-V5#zh-cn_topic_0000001792256137_overrides)。
 
 ```json
 {
   "overrides": {
-    "@rnoh/react-native-openharmony": "./react_native_openharmony"
+    "@rnoh/react-native-openharmony" : "./react_native_openharmony" // 指向源码路径
   }
 }
 ```
 
-### 2. 引入原生端依赖
+### 2. 引入原生端代码
 
-打开 `entry/oh-package.json5`，添加：
+目前有两种方法：
+
+- 通过 har 包引入。
+- 直接链接源码。
+
+方法一：通过 har 包引入（推荐）
+
+> [!TIP] har 包位于三方库安装路径的 `harmony` 文件夹下。
+
+打开 `entry/oh-package.json5`，添加以下依赖：
 
 ```json
 "dependencies": {
-  "@react-native-ohos/react-native-notifications": "file:../../node_modules/@react-native-ohos/react-native-notifications/harmony/notifications.har"
-}
+    "@react-native-ohos/react-native-notifications": "file:../../node_modules/@react-native-ohos/react-native-notifications/harmony/notifications.har"
+  }
 ```
 
-执行 `ohpm install`。
+点击右上角的 `sync` 按钮
 
-### 3. 配置 CMakeLists
+或者在命令行终端执行：
+
+```bash
+cd entry
+ohpm install
+```
+方法二：直接链接源码
+
+> [!TIP] 如需使用直接链接源码，请参考[直接链接源码说明](https://atomgit.com/CPF-RN/usage-docs/blob/master/zh-cn/link-source-code.md)。
+
+### 3. 配置 CMakeLists 和引入 NotificationsPackage
 
 打开 `entry/src/main/cpp/CMakeLists.txt`，添加：
 
-```cmake
-set(OH_MODULES "${CMAKE_CURRENT_SOURCE_DIR}/../../../oh_modules")
+```diff
+project(rnapp)
+cmake_minimum_required(VERSION 3.4.1)
+set(CMAKE_SKIP_BUILD_RPATH TRUE)
+set(RNOH_APP_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
+set(NODE_MODULES "${CMAKE_CURRENT_SOURCE_DIR}/../../../../../node_modules")
++ set(OH_MODULES "${CMAKE_CURRENT_SOURCE_DIR}/../../../oh_modules")
+set(RNOH_CPP_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../../../../../react-native-harmony/harmony/cpp")
 
-add_subdirectory("${OH_MODULES}/@react-native-ohos/react-native-notifications/src/main/cpp" ./rnoh_notifications)
+add_subdirectory("${RNOH_CPP_DIR}" ./rn)
 
-target_link_libraries(rnoh_app PUBLIC rnoh_notifications)
+# RNOH_BEGIN: manual_package_linking_1
++ add_subdirectory("${OH_MODULES}/@react-native-ohos/react-native-notifications/src/main/cpp" ./rnoh_notifications)
+# RNOH_END: manual_package_linking_1
+
+add_library(rnoh_app SHARED
+    ${GENERATED_CPP_FILES}
+    "./PackageProvider.cpp"
+    "${RNOH_CPP_DIR}/RNOHAppNapiBridge.cpp"
+)
+target_link_libraries(rnoh_app PUBLIC rnoh)
+
+# RNOH_BEGIN: manual_package_linking_2
++ target_link_libraries(rnoh_app PUBLIC rnoh_notifications)
+# RNOH_END: manual_package_linking_2
 ```
-
-### 4. 注册 Package（C++ 侧）
 
 打开 `entry/src/main/cpp/PackageProvider.cpp`，添加：
 
-```cpp
-#include "NotificationsPackage.h"
+```diff
+#include "RNOH/PackageProvider.h"
++ #include "NotificationsPackage.h"
+
+using namespace rnoh;
 
 std::vector<std::shared_ptr<Package>> PackageProvider::getPackages(Package::Context ctx) {
     return {
-        std::make_shared<NotificationsPackage>(ctx),
++     std::make_shared<NotificationsPackage>(ctx)
     };
 }
 ```
 
-### 5. 注册 Package（ETS 侧）
+### 4. 在 ArkTs 侧引入 NotificationsPackage
 
 打开 `entry/src/main/ets/RNPackagesFactory.ets`，添加：
 
-```typescript
-import { NotificationsPackage } from '@react-native-ohos/react-native-notifications/ts';
+```diff
+  ...
++ import { NotificationsPackage } from '@react-native-ohos/react-native-notifications/ts';
 
 export function createRNPackages(ctx: RNPackageContext): RNPackage[] {
   return [
-    new NotificationsPackage(ctx),
++    new NotificationsPackage(ctx)
   ];
 }
 ```
-
 </details>
 
-## 属性 / API
+### 运行
 
-| API | 描述 | 参数 | 返回值 | HarmonyOS 支持 |
-|-----|------|------|--------|----------------|
-| registerRemoteNotifications | 申请通知授权并注册远程推送 | options?: NotificationPermissionOptions | void | ⚠️ 需特定条件（授权链路完整；token 依赖 AGC + 真机） |
-| postLocalNotification | 发布本地通知 | notification: Notification, id?: number | number | ✅ 完全支持 |
-| cancelLocalNotification | 取消指定本地通知 | notificationId: number | void | ✅ 完全支持 |
-| cancelAllLocalNotifications | 取消全部本地通知（ios 面） | 无 | void | ✅ 完全支持 |
-| getInitialNotification | 获取冷启动通知（一次性消费） | 无 | Promise<Notification \| undefined> | ✅ 完全支持 |
-| setCategories | 注册通知类别（行动按钮） | categories: NotificationCategory[] | void | ⚠️ 部分支持（每条通知最多 2 个按钮；activationMode 等属性无系统映射） |
-| setNotificationChannel | 设置通知渠道 | channel: NotificationChannel | void | ⚠️ 部分支持（importance 映射槽类型枚举，细粒度字段无系统映射） |
-| isRegisteredForRemoteNotifications | 查询通知开关状态 | 无 | Promise<boolean> | ✅ 完全支持 |
-| checkPermissions | 查询通知权限 | 无 | Promise<NotificationPermissions> | ⚠️ 部分支持（五项能力统一映射应用级通知开关） |
-| getDeliveredNotifications | 查询已发通知 | 无 | Promise<Notification[]> | ✅ 完全支持 |
-| removeDeliveredNotifications | 删除指定已发通知 | identifiers: string[] | void | ✅ 完全支持 |
-| removeAllDeliveredNotifications | 删除全部已发通知 | 无 | void | ✅ 完全支持 |
-| refreshToken | 刷新 Push token（android 面） | 无 | void | ⚠️ 需特定条件（依赖 AGC 开通推送 + 真机） |
-| abandonPermissions | 撤销通知授权（ios 面） | 无 | void | ⚠️ 部分支持（跳转本应用通知设置页） |
-| registerPushKit | 注册 Push Kit（ios 面） | 无 | void | ⚠️ 需特定条件（依赖 AGC + 真机） |
-| getBadgeCount | 读取应用角标（ios 面） | 无 | Promise<number> | ⚠️ 部分支持（API 22+ 真实读取；低版本返回最近一次 setBadgeCount 记录值） |
-| setBadgeCount | 设置应用角标（ios 面） | count: number | void | ✅ 完全支持 |
-| finishPresentingNotification / finishHandlingAction / finishHandlingBackgroundAction | iOS completion 协议 | notificationId 等 | void | ❌ 不支持（鸿蒙无前台展示拦截回调，空实现） |
-| 事件：remoteNotificationsRegistered | token 获取成功 | event: { deviceToken } | — | ⚠️ 需特定条件（依赖 AGC + 真机） |
-| 事件：remoteNotificationsRegistrationFailed | token 获取失败 | event: RegistrationError(code/domain/localizedDescription) | — | ✅ 完全支持（失败路径真实派发） |
-| 事件：remoteNotificationsRegistrationDenied | 通知授权被拒 | 无 | — | ✅ 完全支持 |
-| 事件：notificationReceived / notificationReceivedBackground | 前台/后台收到推送 | notification: Notification | — | ⚠️ 部分支持（仅 Push Kit BACKGROUND 透传消息；通知类消息由系统直接呈现，无到达回调） |
-| 事件：notificationOpened | 点击通知/行动按钮 | notification, completion, actionResponse? | — | ✅ 完全支持 |
-| 事件：pushKitRegistered / pushKitNotificationReceived | Push Kit 注册成功/透传消息 | event | — | ⚠️ 需特定条件（依赖 AGC + 真机） |
-| 事件：appNotificationSettingsLinked | iOS 通知设置链接 | 无 | — | ❌ 不支持（iOS 专属概念，鸿蒙无此事件源） |
+点击右上角的 `sync` 按钮
 
-### 平台差异
-
-- 渠道粒度：`setNotificationChannel` 的 importance 映射通知槽类型（4+→社交通信、2~3→服务信息、0~1→其他）并 `addSlot`；enableLights/vibrationPattern/groupId/lightColor 等细粒度字段鸿蒙槽位不开放
-- 行动按钮：鸿蒙 `NotificationActionButton` 仅支持 title/wantAgent/userInput；`textInput` 文本经 inputKey 回传到 `actionResponse.text`；每条通知最多 2 个按钮（超出截断）
-- `checkPermissions` 的 alert/sound/badge/lockScreen/notificationCenter 五项统一映射应用级通知开关（鸿蒙无逐项开关）
-- `getInitialNotification` 无冷启动通知时返回 `undefined`（对齐 Android resolve(null) 行为）
-- 已发通知的 `identifier` 统一为系统通知 id 字符串，可直接传给 `removeDeliveredNotifications`
-
-### 未实现功能
-
-| API | 原因 |
-|-----|------|
-| finishPresentingNotification / finishHandlingAction / finishHandlingBackgroundAction | 鸿蒙通知由系统通知中心直接呈现，应用无前台展示拦截/完成回调点（与原库 Android 行为一致，JS 层 completion 为 no-op） |
-| appNotificationSettingsLinked 事件 | iOS「通知设置链接」专属概念，鸿蒙通知体系无此事件源 |
-| abandonPermissions 程序化撤销 | 鸿蒙无撤销授权 API，最接近替代为 `openNotificationSettings` 跳转设置页（API 18+） |
-
-### 使用限制
-
-- Push token 链路（refreshToken / registerPushKit / registerRemoteNotifications 的 token 事件）依赖 AGC 开通推送服务、`client_id` 配置与真机签名环境；未开通时派发 `remoteNotificationsRegistrationFailed`（错误码如 1000900012），本地通知全链路不受影响
-- 自定义铃声音频需位于应用 `resources/rawfile`，`sound` 传文件名（含扩展名，如 `'chime.wav'`）；未提供文件时使用系统默认音
-- `getBadgeNumber` 为 API 22+ 接口，低版本设备 `getBadgeCount` 返回最近一次 `setBadgeCount` 的记录值
-
-## 快速验证（运行 Example）
-
-### 前置条件
-
-| 依赖 | 版本要求 |
-|------|----------|
-| Node.js | >= 18 |
-| DevEco Studio | 5.0+ / 6.0+ |
-| HarmonyOS SDK | API 12+ |
-
-### 运行步骤
-
-**1. 克隆仓库**
+或者在命令行终端执行：
 
 ```bash
-git clone <仓库地址>
-cd <仓库目录>
+cd entry
+ohpm install
 ```
 
-**2. 安装依赖并构建**
-
-```bash
-npm install --legacy-peer-deps
-npm pack           # 生成 tgz 包（会自动触发 prepare 构建 JS 产物）
-```
-
-**3. 进入 example 目录，安装依赖**
-
-```bash
-cd example
-npm install --legacy-peer-deps
-```
-
-**4. 生成 JS Bundle**
-
-```bash
-npm run dev
-```
-
-产物：`harmony/entry/src/main/resources/rawfile/bundle.harmony.js`
-
-**5. 用 DevEco Studio 打开鸿蒙工程**
-
-- 打开 DevEco Studio
-- 选择 `example/harmony` 目录
-- 等待 Sync 完成
-
-**6. 编译并运行 HAP**
-
-在 DevEco Studio 中点击运行按钮，将 HAP 安装到设备/模拟器。
-
-> **注意**：Example 中已预置插件依赖和 Package 注册，无需手动配置 Link。
+然后编译、运行即可。
 
 ## 约束与限制
 
 ### 兼容性
 
-- RNOH: 0.72+
-- HarmonyOS SDK: API 12+
-- DevEco Studio: 5.0+
+本文档内容基于以下版本验证通过：
+
+1. RNOH: 0.72.145; SDK: HarmonyOS 6.0.0 Release SDK; IDE: DevEco Studio 6.0.0.858; ROM: 6.0.0.112;
+2. RNOH: 0.77.18; SDK: HarmonyOS 6.0.0 Release SDK; IDE: DevEco Studio 6.0.0.858; ROM: 6.0.0.112;
+3. RNOH: 0.82.1; SDK: HarmonyOS 6.0.0 Release SDK; IDE: DevEco Studio 6.0.0.858; ROM: 6.0.0.112;
+4. RNOH: 0.84.1; SDK: HarmonyOS 6.0.0 Release SDK; IDE: DevEco Studio 6.0.0.858; ROM: 6.0.0.112;
+
+### 权限要求
+
+- 如果使用 `registerRemoteNotifications` 注册远程通知，应用需要申请网络权限，在 `entry/src/main/module.json5` 中添加：
+
+```json
+requestPermissions: [
+  {
+    name: "ohos.permission.INTERNET",
+  },
+],
+```
+
+- 通知授权通过运行时 `requestEnableNotification` 系统弹窗申请，`entry/src/main/module.json5` 无需声明任何 `ohos.permission.*` 权限。
+- 自定义铃声需将音频文件放置到 OpenHarmony 工程 rawfile 下，`sound` 传文件名（含扩展名，如 `'chime.wav'`）；未提供文件时使用系统默认提示音。
+
+rawfile 路径：`entry/src/main/resources/rawfile`。
+
+### 编译运行API要求
+
+> [!TIP] 当前三方库所有版本均已实现版本隔离，支持在 `API12+` 工程编译，及 `API12+` ROM 运行。
+
+> [!TIP] 以下功能依赖特定版本的 API，使用 `低于指定API版本的工程编译` 或 `低于指定API版本的ROM运行` 均可能导致部分功能受限。
+
+1. `getBadgeCount` 的真实读取依赖 `getBadgeNumber`（API 22+ 接口），低于 API 22 的 ROM 上返回最近一次 `setBadgeCount` 的记录值。
+2. `abandonPermissions` 跳转本应用通知设置页依赖 `openNotificationSettings`（API 13+），低于 API 13 的 ROM 上无跳转能力。
+
+## 使用示例
+
+下面的代码展示了这个库的基本使用场景：
+
+> [!WARNING] 使用时 import 的库名不变。
+
+```tsx
+import React, { useEffect, useState } from 'react';
+import { Button, StyleSheet, Text, View } from 'react-native';
+import { Notifications } from 'react-native-notifications';
+
+export default function App() {
+  const [registered, setRegistered] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    // 注册远程通知（鸿蒙：弹系统授权框 → 获取 Push Kit token）
+    Notifications.registerRemoteNotifications();
+
+    // 事件监听：组件挂载注册、卸载时全部移除（资源释放契约）
+    const subscriptions = [
+      Notifications.events().registerRemoteNotificationsRegistered((event) => {
+        console.log('deviceToken:', event.deviceToken);
+      }),
+      Notifications.events().registerRemoteNotificationsRegistrationFailed((event) => {
+        console.log('failed:', event.code, event.localizedDescription);
+      }),
+      Notifications.events().registerNotificationOpened((notification, completion, actionResponse) => {
+        console.log('notificationOpened', notification.title, actionResponse?.identifier, actionResponse?.text);
+        completion();
+      }),
+    ];
+
+    return () => {
+      subscriptions.forEach((subscription) => subscription.remove());
+    };
+  }, []);
+
+  // 查询注册状态
+  const doCheckRegistered = () => {
+    Notifications.isRegisteredForRemoteNotifications().then((value: boolean) => {
+      setRegistered(value);
+    });
+  };
+
+  // 撤销授权（鸿蒙语义：跳转本应用通知设置页）
+  const doAbandonPermissions = () => {
+    (Notifications.ios as any).abandonPermissions();
+  };
+
+  // 发布基础本地通知（字段对齐 Notification；sound 传 rawfile 内的铃声文件名，如 'chime.wav'）
+  const postBasic = () => {
+    Notifications.postLocalNotification(
+      {
+        identifier: '0',
+        title: '基础本地通知',
+        body: '来自 OpenHarmony 通知中心的文本通知',
+        sound: '',
+        badge: 0,
+        type: '',
+        thread: '',
+        payload: { category: '', link: 'rnnotifications://demo/basic' },
+      },
+      1
+    );
+  };
+
+  return (
+    <View style={styles.root}>
+      <View style={styles.row}>
+        <Button title="撤销授权(跳设置)" onPress={doAbandonPermissions} />
+        <Button title="查询注册状态" onPress={doCheckRegistered} />
+      </View>
+      <View style={styles.row}>
+        <Button title="发布基础通知" onPress={postBasic} />
+      </View>
+      <Text style={styles.value}>通知开关：{registered === null ? '未查询' : String(registered)}</Text>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  root: { flex: 1, justifyContent: 'center', padding: 12 },
+  row: { flexDirection: 'row', gap: 8, marginBottom: 8, flexWrap: 'wrap' },
+  value: { fontSize: 13, color: '#333333' },
+});
+```
+
+## 使用说明
+
+**注册远程通知**
+
+```tsx
+Notifications.registerRemoteNotifications();
+Notifications.events().registerRemoteNotificationsRegistered((event) => {
+  console.log('deviceToken:', event.deviceToken);
+});
+```
+
+远程推送走 Push Kit：先经 `requestEnableNotification` 弹系统授权框，再获取 Push token（需 AGC 开通推送服务 + 真机签名；失败派发 `remoteNotificationsRegistrationFailed`，本地通知不受影响）。
+
+**发布本地通知**
+
+```tsx
+Notifications.postLocalNotification(
+  {
+    identifier: '0',
+    title: '会议提醒',
+    body: '10:30 产品评审',
+    sound: '',
+    badge: 0,
+    type: '',
+    thread: '',
+    payload: { category: 'SOME_CATEGORY', link: 'app://meeting/1' }, // 点击通知回拉应用时携带
+  },
+  1
+);
+```
+
+**监听通知事件**
+
+```tsx
+Notifications.events().registerNotificationOpened((notification, completion, actionResponse) => {
+  // actionResponse.text 为行动按钮 textInput 的输入回传
+  console.log(notification.title, actionResponse?.identifier, actionResponse?.text);
+  completion();
+});
+```
+
+## 接口说明
+
+> [!TIP] "平台"列表示该属性在原三方库上支持的平台。
+
+> [!TIP] "OpenHarmony平台支持"列为 "是" 表示 OpenHarmony 平台支持该属性；"否" 则表示不支持；partially 表示部分支持。使用方法跨平台一致，效果对标 iOS 或 Android 的效果。
+
+### API
+
+| 名称 | 参数类型 | 返回值 | 平台 | OpenHarmony平台支持 | 描述 |
+| --- | --- | --- | --- | --- | --- |
+| registerRemoteNotifications | options?: NotificationPermissionOptions | void | All | 是 | 注册远程通知：申请通知授权，授权成功后获取推送 token。 |
+| postLocalNotification | notification: Notification, id?: number | number | All | 是 | 发布本地通知。 |
+| cancelLocalNotification | notificationId: number | void | All | 是 | 取消指定 id 的本地通知。 |
+| cancelAllLocalNotifications | 无 | void | iOS | 是 | 取消全部本地通知。 |
+| getInitialNotification | 无 | Promise<Notification \| undefined> | All | 是 | 获取冷启动通知（一次性消费）。 |
+| setCategories | categories: NotificationCategory[] | void | iOS | partially | 注册通知类别，为通知配置行动按钮（鸿蒙每条通知最多 2 个按钮）。 |
+| setNotificationChannel | channel: NotificationChannel | void | Android | partially | 设置通知渠道（鸿蒙仅 importance 映射通知槽类型，细粒度字段不生效。） |
+| isRegisteredForRemoteNotifications | 无 | Promise<boolean> | All | 是 | 查询远程通知是否已启用。 |
+| checkPermissions | 无 | Promise<NotificationPermissions> | All | partially | 查询通知权限详情（鸿蒙各权限项统一映射应用级通知开关）。 |
+| getDeliveredNotifications | 无 | Promise<Notification[]> | All | 是 | 查询通知栏内已展示的通知。 |
+| removeDeliveredNotifications | identifiers: string[] | void | All | 是 | 从通知栏移除指定已展示的通知。 |
+| removeAllDeliveredNotifications | 无 | void | All | 是 | 从通知栏移除全部已展示的通知。 |
+| refreshToken | 无 | void | Android | 是 | 刷新推送 token。 |
+| abandonPermissions | 无 | void | iOS | partially | 撤销通知授权（鸿蒙不支持程序化撤销，跳转本应用通知设置页 API 13+）。 |
+| registerPushKit | 无 | void | iOS | 是 | 注册 PushKit 获取 token。 |
+| getBadgeCount | 无 | Promise<number> | iOS | partially | 读取应用角标数（鸿蒙API 22+ 真实读取，低版本返回最近一次 setBadgeCount 的记录值）。 |
+| setBadgeCount | count: number | void | iOS | 是 | 设置应用角标数。 |
+| finishPresentingNotification | notificationId: string | void | iOS | 否 | 完成前台通知的展示（鸿蒙无前台展示拦截点，空实现）。 |
+| finishHandlingAction | notificationId: string, actionResponse: NotificationActionResponse | void | iOS | 否 | 完成前台行动按钮的处理（鸿蒙无对应回调点，空实现）。 |
+| finishHandlingBackgroundAction | notificationId: string, actionResponse: NotificationActionResponse | void | iOS | 否 | 完成后台行动的处理（鸿蒙无对应回调点，空实现）。 |
+
+### 事件
+
+| 名称 | 参数 | 平台 | OpenHarmony平台支持 | 描述 |
+| --- | --- | --- | --- | --- |
+| remoteNotificationsRegistered | event: { deviceToken } | All | 是 | 远程通知注册成功，返回 deviceToken。 |
+| remoteNotificationsRegistrationFailed | event: RegistrationError(code/domain/localizedDescription) | All | 是 | 远程通知注册失败，返回错误信息。 |
+| remoteNotificationsRegistrationDenied | 无 | All | 是 | 通知授权被用户拒绝。 |
+| notificationReceived | notification: Notification | All | partially | 应用前台收到通知（鸿蒙仅 Push Kit 透传消息触发）。 |
+| notificationReceivedBackground | notification: Notification | All | 否 | 应用后台收到通知（鸿蒙应用在后台时不会触发）。 |
+| notificationOpened | notification, completion, actionResponse? | All | 是 | 用户点击通知或行动按钮（textInput 输入经 actionResponse.text 回传）。 |
+| pushKitRegistered | event: { pushKitToken } | iOS | 是 | PushKit 注册成功，返回 token。 |
+| pushKitNotificationReceived | event: { type, data } | iOS | 是 | 收到 PushKit 透传消息。 |
+| appNotificationSettingsLinked | 无 | iOS | 否 | 用户跳转应用通知设置链接时触发（鸿蒙通知体系无此事件源）。 |
 
 ## 遗留问题
 
-- Push token 获取依赖 AGC 开通推送服务与真机签名环境，普通构建环境下 `remoteNotificationsRegistered` 不可达（失败路径经 `remoteNotificationsRegistrationFailed` 真实暴露）
-- iOS completion 协议（finish 系列方法）为空实现（见「未实现功能」）
+无
+
+## 其他
+
+- iOS completion 协议（finish 系列方法）鸿蒙不支持，为空实现：鸿蒙通知由系统通知中心直接呈现，应用无前台展示拦截/完成回调点（与原库 Android 行为一致）。
+- appNotificationSettingsLinked 事件为 iOS 专属概念，鸿蒙通知体系无此事件源。
+- abandonPermissions 无法程序化撤销授权（鸿蒙无对应 API），最接近替代为跳转本应用通知设置页（API 13+）。
+
+## 目录结构
+
+```
+/react-native-notifications  # 项目根目录
+├── harmony                    # 适配代码
+│    └─ notifications.har      # har包
+│    └─ notifications          # 适配核心代码
+│          └─ index.ets        # 适配代码入口
+│          └─ src/main/ets
+│              └─ NotificationsTurboModule.ets   # TurboModule 实现
+│              └─ RNNotificationsBridge.ets      # 鸿蒙通知 / Push Kit 桥接
+├── src                        # RN代码
+│    └─ index.ts               # 入口文件
+│    └─ Notifications.ts       # Notifications 组件主入口
+│    └─ specs                  # codegen 类型文件
+│    └─ interfaces             # 类型文件
+├── example                    # 示例工程
+├── README.md                  # 中文安装使用方法
+├── README_en.md               # 英文安装使用方法
+```
+
+## 贡献代码
+
+使用过程中发现任何问题都可以提交 [Issue](https://github.com/react-native-oh-library/react-native-notifications/issues)，当然，也非常欢迎提交 [PR](https://github.com/react-native-oh-library/react-native-notifications/pulls)。
 
 ## 开源协议
 
-本项目基于 [MIT License](https://github.com/wix/react-native-notifications/blob/master/LICENSE)，详见 [LICENSE](./LICENSE) 文件。
+本项目基于 [MIT License](https://github.com/wix/react-native-notifications/blob/master/LICENSE)，请自由地享受和参与开源。

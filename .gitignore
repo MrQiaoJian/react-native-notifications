@@ -17,6 +17,9 @@ yarn-error.log
 harmony/library/.cxx/
 harmony/library/build/
 harmony/library/.hvigor/
+harmony/notifications/oh_modules/
+harmony/notifications/.hvigor/
+harmony/notifications/build/
 
 # rn.py build hap fingerprints / local build metadata
 .rn-build/

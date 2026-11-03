@@ -11,6 +11,10 @@
     {
       "name": "EntryAbility_label",
       "value": "label"
+    },
+    {
+      "name": "internet_reason",
+      "value": "网络请求数据"
     }
   ]
 }
