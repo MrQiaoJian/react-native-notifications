@@ -16,6 +16,10 @@ import { NotificationChannel } from '../../src/interfaces/NotificationChannel';
 import { NotificationPermissionOptions } from '../../src/interfaces/NotificationPermissions';
 
 describe('NotificationsRoot', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
   afterEach(() => {
     Platform.OS = 'harmony';
   });
@@ -98,7 +102,7 @@ describe('NotificationsRoot', () => {
   });
 
   it('setCategories forwards the categories to native', () => {
-    const categories = [new NotificationCategory('cat-1')] as [NotificationCategory?];
+    const categories = [new NotificationCategory('cat-1')];
 
     new NotificationsRoot().setCategories(categories);
 

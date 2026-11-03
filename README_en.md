@@ -365,9 +365,9 @@ Notifications.events().registerNotificationOpened((notification, completion, act
 | registerPushKit | None | void | iOS | Yes | Register PushKit to obtain the token. |
 | getBadgeCount | None | Promise<number> | iOS | partially | Read the app badge count (actually read on OpenHarmony API 22+; on lower versions returns the value recorded by the last `setBadgeCount`). |
 | setBadgeCount | count: number | void | iOS | Yes | Set the app badge count. |
-| finishPresentingNotification | notificationId: string | void | iOS | No | Finish presenting a foreground notification (no foreground presentation interception point on OpenHarmony; empty implementation). |
-| finishHandlingAction | notificationId: string, actionResponse: NotificationActionResponse | void | iOS | No | Finish handling a foreground action button (no corresponding callback point on OpenHarmony; empty implementation). |
-| finishHandlingBackgroundAction | notificationId: string, actionResponse: NotificationActionResponse | void | iOS | No | Finish handling a background action (no corresponding callback point on OpenHarmony; empty implementation). |
+| finishPresentingNotification | notificationId: string, options: Object | void | iOS | No | Finish presenting a foreground notification (no foreground presentation interception point on OpenHarmony; empty implementation). |
+| finishHandlingAction | notificationId: string | void | iOS | No | Finish handling a foreground action button (no corresponding callback point on OpenHarmony; empty implementation). |
+| finishHandlingBackgroundAction | notificationId: string, backgroundFetchResult: string | void | iOS | No | Finish handling a background action (no corresponding callback point on OpenHarmony; empty implementation). |
 
 ### Events
 
@@ -382,6 +382,20 @@ Notifications.events().registerNotificationOpened((notification, completion, act
 | pushKitRegistered | event: { pushKitToken } | iOS | Yes | PushKit registered successfully; returns the token. |
 | pushKitNotificationReceived | event: { type, data } | iOS | Yes | A PushKit transparent message was received. |
 | appNotificationSettingsLinked | None | iOS | No | Triggered when the user jumps to the app's notification settings link (no such event source in the OpenHarmony notification system). |
+
+### Exported Types
+
+The following types can be imported from the package root `react-native-notifications`:
+
+| Name | Description |
+| --- | --- |
+| Notification | Notification DTO (returned by `getInitialNotification` and `getDeliveredNotifications`, and delivered in event callbacks). |
+| NotificationCategory | Notification category; the parameter type of `setCategories`. |
+| NotificationActionResponse | Type of the `actionResponse` parameter in the `notificationOpened` callback; textInput input is returned via its `text` field. |
+| NotificationCompletion | Foreground presentation completion options (iOS protocol; no-op on OpenHarmony). |
+| NotificationBackgroundFetchResult | Background fetch result enum (`newData` / `noData` / `failed`; iOS protocol, no-op on OpenHarmony). |
+| Registered / RegistrationError / RegisteredPushKit / NotificationResponse | Event payload interfaces (push token, registration errors, PushKit token, etc.). |
+| EventSubscription | Event subscription handle; a compatibility alias for the react-native `EmitterSubscription` type (added by this library, behaviorally identical — event registration methods actually return `EmitterSubscription`). |
 
 ## Known Issues
 

@@ -46,7 +46,7 @@ export class Commands {
     this.nativeCommandsSender.registerPushKit();
   }
 
-  public setCategories(categories: [NotificationCategory?]) {
+  public setCategories(categories: NotificationCategory[]) {
     this.nativeCommandsSender.setCategories(categories);
   }
 

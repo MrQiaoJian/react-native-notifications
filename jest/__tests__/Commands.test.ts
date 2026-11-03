@@ -120,7 +120,7 @@ describe('Commands', () => {
   });
 
   it('setCategories forwards the categories', () => {
-    const categories = [new NotificationCategory('cat-1')] as [NotificationCategory?];
+    const categories = [new NotificationCategory('cat-1')];
     commands.setCategories(categories);
     expect(deps.nativeCommandsSender.setCategories).toHaveBeenCalledWith(categories);
   });

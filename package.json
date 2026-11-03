@@ -51,6 +51,7 @@
     "@babel/preset-typescript": "^7.24.0",
     "react-native-builder-bob": "^0.18.0",
     "@react-native-oh/react-native-harmony-cli": "^0.77.50",
+    "@react-native/babel-preset": "^0.77.3",
     "metro": "^0.81.0"
   },
   "engines": {

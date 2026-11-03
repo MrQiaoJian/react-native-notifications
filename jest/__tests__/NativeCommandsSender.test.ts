@@ -61,7 +61,7 @@ describe('NativeCommandsSender', () => {
   });
 
   it('sends setCategories with the categories', () => {
-    const categories = [new NotificationCategory('cat-1')] as [NotificationCategory?];
+    const categories = [new NotificationCategory('cat-1')];
     sender.setCategories(categories);
     expect(mockRNBridgeModule.setCategories).toHaveBeenCalledWith(categories);
   });
