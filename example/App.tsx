@@ -328,6 +328,16 @@ export default function App() {
       });
   };
 
+  const doGetBadge = () => {
+    appendLog('调用 ios.getBadgeCount()', 'action');
+    (Notifications.ios as any)
+      .getBadgeCount()
+      .then((value: number) => {
+        setBadgeCountState(value);
+        appendLog(`getBadgeCount → ${value}`, 'result');
+      });
+  };
+
   const doGetInitial = () => {
     Notifications.getInitialNotification().then((notification: any) => {
       if (notification && notification.identifier !== undefined) {
@@ -411,6 +421,9 @@ export default function App() {
           <View style={styles.row}>
             <Button title="设角标=3" onPress={() => doSetBadge(3)} />
             <Button title="清角标" onPress={() => doSetBadge(0)} />
+          </View>
+          <View style={styles.row}>
+            <Button title="获取角标" onPress={doGetBadge} />
           </View>
           <Text style={styles.value}>当前角标：{badgeCount === null ? '未查询' : String(badgeCount)}</Text>
           <View style={styles.row}>
